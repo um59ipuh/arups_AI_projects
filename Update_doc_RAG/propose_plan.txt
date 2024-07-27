@@ -1,0 +1,29 @@
+I have tried to explain briefly here
+
+As of now we have gpt4 and a big context window, if we consider sometimes we have small documents to be updated. On that case we 
+can use a simple flow using gpt4 128k context window, otherwise we can use RAG based flow.
+
+if number_of_total_tokens < 100k:
+    // here is the simple flow with gpt4
+    // TODO
+    1. Embed full document and question into prompt and instruct to find all related entity from there. (1 API call)
+    2. After getting all entity sequences we can update either one by one(every API request) or create batch for update.
+    3. Update main document after getting response from openai request.
+
+else:
+    // here is the RAG based approach
+    1. Load the document into program
+    2. Split it into smaller chunks. I take 300 tokens and 50 for overlapping. [very crucial from my understanding]
+        - use RecursiveTextSplitter
+    3. Indexing into a vector database.
+        - use Chroma vector database
+    4. Retrieve all relevant documents based on user query.
+    5. Restructure user query by LLM for updating the docs.
+        - it would work better
+    6. if total retrieved entities is more than 25 then create batches based on token count < 1000
+    7. otherwise request to LLM taking one by one entity and update using LLM.
+    8. Now update main document and write to a new file
+    9. print all entities which are updated
+
+
+Serious Lackings: Evaluation of RAG. I would like to integrate RAG TRAID and TruLens to check this.
